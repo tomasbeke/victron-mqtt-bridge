@@ -1,0 +1,12 @@
+image:
+  prefix: "localhost:5000/home-monitoring"
+  pullPolicy: Always
+
+service:
+  port: 8080
+  mqtt:
+    host: "host.docker.internal"
+    port: 1883
+    installationId: "123456"
+  kafka:
+    bootstrapServers: "host.docker.internal:19092"

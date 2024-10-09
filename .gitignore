@@ -1,0 +1,35 @@
+# sbt
+.bsp/
+.bloop/
+lib_managed
+project/project/*
+project/target/*
+integration-tests/target/*
+target/*
+
+# IntelliJ IDEA
+.idea
+*.iml
+
+# Metals
+project/metals.sbt
+.metals
+
+# VS Code
+.vscode
+
+# Mac
+.DS_Store
+
+# Log files
+*.log
+
+*.csv
+
+.clj-kondo
+.lsp
+/redpanda/
+/scripts/
+/deployment/helm/values-prod.yaml
+/deployment/helm/values-dev.yaml
+/fake-broker.py
