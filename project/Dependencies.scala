@@ -61,10 +61,11 @@ object Dependencies {
   object IntegrationTestScope {
     val weaverCats = "com.disneystreaming" %% "weaver-cats" % "0.8.3" % Test
     val testContainers = "com.dimafeng" %% "testcontainers-scala-core" % "0.41.0" % Test
+    val testContainersKafka = "com.dimafeng" %% "testcontainers-scala-kafka" % "0.41.0" % Test
     val pahoMqtt = "org.eclipse.paho" % "org.eclipse.paho.client.mqttv3" % "1.2.5" % Test
 
     val deps: List[ModuleID] = List(
-      weaverCats, testContainers, pahoMqtt
+      weaverCats, testContainers, testContainersKafka, pahoMqtt
     )
   }
 }
