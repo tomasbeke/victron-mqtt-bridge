@@ -15,7 +15,7 @@ import com.auradev.victronbridge.model.VictronValueEvent
 import com.auradev.victronbridge.processor.EventForwarders
 import com.auradev.victronbridge.util.ContainerResource
 
-object KafkaForwarderSuite extends IOSuite {
+object KafkaForwarderSuite extends IOSuite:
 
   type Res = KafkaContainer
 
@@ -25,7 +25,7 @@ object KafkaForwarderSuite extends IOSuite {
 
   def sharedResource: Resource[IO, Res] = ContainerResource(IO.pure(kafkaContainer))
 
-  test("Events should be sent to Kafka topic with proper key") { kafkaContainer =>
+  test("Events should be sent to Kafka topic with proper key"): kafkaContainer =>
     implicit val victronValueEventCodec: JsonValueCodec[VictronValueEvent] =
       JsonCodecMaker.make[VictronValueEvent](CodecMakerConfig)
 
@@ -42,7 +42,7 @@ object KafkaForwarderSuite extends IOSuite {
       .withGroupId("test-group")
       .withAutoOffsetReset(AutoOffsetReset.Earliest)
 
-    for {
+    for
       messageReceived <- Deferred[IO, (String, String)]
 
       producerStream = Stream.emit(event)
@@ -63,8 +63,6 @@ object KafkaForwarderSuite extends IOSuite {
       _ <- producerStream.compile.drain
       receivedMessage <- messageReceived.get.timeout(5.seconds)
       _ <- consumerFiber.cancel
-    } yield matches(receivedMessage) {
+    yield matches(receivedMessage):
       case (key, value) => expect.eql(key, event.key) && expect.eql(value, expectedJson)
-    }
-  }
-}
+

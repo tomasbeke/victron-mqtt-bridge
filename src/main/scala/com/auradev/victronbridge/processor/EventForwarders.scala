@@ -9,7 +9,7 @@ import fs2.{ Pipe, Stream }
 import org.typelevel.log4cats.Logger
 import org.typelevel.log4cats.slf4j.Slf4jLogger
 
-object EventForwarders {
+object EventForwarders:
   private def logger[F[_]: Sync]: Logger[F] = Slf4jLogger.getLoggerFromClass[F](this.getClass)
 
   def kafkaProducerPipe[F[_]: Async](
@@ -18,14 +18,11 @@ object EventForwarders {
   ): Pipe[F, VictronValueEvent, Unit] = eventStream =>
     KafkaProducer
       .stream(producerSettings)
-      .flatMap(producer =>
-        eventStream.evalMap { event =>
+      .flatMap: producer =>
+        eventStream.evalMap: event =>
           val jsonString = writeToString(event)
           logger.debug(s"Forwarding event: $jsonString") >>
             producer
               .produceOne(ProducerRecord(topicName, event.key, jsonString))
               .flatten
-        }
-      )
       .void
-}

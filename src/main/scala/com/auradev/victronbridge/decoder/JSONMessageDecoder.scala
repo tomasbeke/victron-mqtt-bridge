@@ -8,20 +8,16 @@ import net.sigusr.mqtt.api.Message
 import cats.syntax.all.catsSyntaxEither
 import scala.util.Try
 
-object JSONMessageDecoder {
+object JSONMessageDecoder:
 
-  def decode(keyAliases: MaskedMap[String])(message: Message): Either[String, VictronValueEvent] = {
+  def decode(keyAliases: MaskedMap[String])(message: Message): Either[String, VictronValueEvent] =
     val payload = new String(message.payload.toArray, "UTF-8")
     val messageValueEither = Try(readFromString[MessageValue](payload)).toEither
       .leftMap(_ => s"Could not deserialize JSON $payload")
 
-    messageValueEither.map { messageValue =>
+    messageValueEither.map: messageValue =>
       VictronValueEvent(
         key = keyAliases.getMasked(message.topic).getOrElse(message.topic),
         topic = message.topic,
         value = messageValue.value
       )
-    }
-  }
-
-}

@@ -5,6 +5,5 @@ import com.github.plokhotnyuk.jsoniter_scala.macros.*
 
 final case class MessageValue(value: Double)
 
-object MessageValue {
+object MessageValue:
   given codec: JsonValueCodec[MessageValue] = JsonCodecMaker.make
-}

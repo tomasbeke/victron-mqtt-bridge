@@ -16,13 +16,13 @@ import org.http4s.server.Router
 import org.typelevel.log4cats.Logger
 import org.typelevel.log4cats.slf4j.Slf4jLogger
 
-object Main extends IOApp {
+object Main extends IOApp:
 
-  override def run(args: List[String]): IO[ExitCode] = {
+  override def run(args: List[String]): IO[ExitCode] =
     implicit val console: Console[IO] = Console.make[IO]
     val logger: Logger[IO] = Logger[IO](Slf4jLogger.getLogger[IO])
 
-    for {
+    for
       config <- ConfigLoader.loadConfig()
 
       cache <- SignallingRef[IO, Map[String, VictronValueEvent]](Map.empty)
@@ -47,23 +47,21 @@ object Main extends IOApp {
         EventForwarders.kafkaProducerPipe(config.kafkaConfig.topicName, kafkaProducerSettings)
       )
 
-      httpApp = Router("/" -> RestRoutes.routes(cache)).orNotFound
+      httpApp = Router("/" -> RestRoutes[IO].routes(cache)).orNotFound
       server = BlazeServerBuilder[IO]
         .bindHttp(config.httpServerConfig.port, config.httpServerConfig.hostname)
         .withHttpApp(httpApp)
         .resource
-        .use(_ => IO.never)
-        .map(_ => ())
+        .useForever
+        .void
 
       exitCode <- Stream(
         mqttSubscriberStream,
         Stream.eval(server)
       ).parJoinUnbounded.compile.drain.attempt
-        .flatMap {
+        .flatMap:
           case Left(e)  => logger.error(e)("Streams failed") >> IO.pure(ExitCode.Error)
           case Right(_) => IO.pure(ExitCode.Success)
-        }
-    } yield exitCode
+    yield exitCode
 
-  }
-}
+end Main

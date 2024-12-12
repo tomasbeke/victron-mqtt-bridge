@@ -17,13 +17,12 @@ case class AppConfig(
 
 sealed trait TransportType extends EnumEntry with Snakecase
 
-object TransportType extends Enum[TransportType] {
+object TransportType extends Enum[TransportType]:
   val values = findValues
 
   case object Plain extends TransportType
   case object TLS extends TransportType
   case object TLSInsecure extends TransportType
-}
 
 case class TopicConfig(
     topic: String,

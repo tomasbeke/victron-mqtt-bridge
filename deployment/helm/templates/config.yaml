@@ -7,5 +7,6 @@ data:
   SERVICE_HTTP_PORT: {{ .Values.service.port | quote }}
   MQTT_HOST: {{ .Values.service.mqtt.host | quote }}
   MQTT_PORT: {{ .Values.service.mqtt.port | quote }}
+  MQTT_TRANSPORT_TYPE: {{ .Values.service.mqtt.transportType | quote }}
   MQTT_INSTALLATION_ID: {{ .Values.service.mqtt.installationId | quote }}
   KAFKA_BOOTSTRAP_SERVERS: {{ .Values.service.kafka.bootstrapServers | quote }}

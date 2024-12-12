@@ -15,7 +15,7 @@ import weaver.IOSuite
 import java.time.Instant
 import scala.concurrent.duration.DurationInt
 
-object MQTTClientSuite extends IOSuite {
+object MQTTClientSuite extends IOSuite:
 
   type Res = GenericContainer
 
@@ -24,12 +24,11 @@ object MQTTClientSuite extends IOSuite {
     dockerImage = "eclipse-mosquitto:latest",
     exposedPorts = Seq(1883),
     waitStrategy = Wait.forListeningPort()
-  ).configure { container =>
+  ).configure: container =>
     container.withCopyFileToContainer(
       MountableFile.forHostPath(mosquittoConfigPath),
       "/mosquitto/config/mosquitto.conf"
     )
-  }
 
   def sharedResource: Resource[IO, Res] = ContainerResource(IO.pure(mosquittoContainer))
 
@@ -38,8 +37,8 @@ object MQTTClientSuite extends IOSuite {
   val messageDecoder: Message => Either[String, MyEvent] = msg =>
     Right(MyEvent(msg.topic, msg.topic, new String(msg.payload.toArray, "UTF-8")))
 
-  test("MqttSubscriber should receive published messages") { mqttContainer =>
-    for {
+  test("MqttSubscriber should receive published messages"): mqttContainer =>
+    for
       host <- IO(mqttContainer.host)
       port <- IO(mqttContainer.mappedPort(1883))
       subscriber = new MqttSubscriber[IO, MyEvent] (
@@ -62,11 +61,10 @@ object MQTTClientSuite extends IOSuite {
       messages <- receivedMessagesFiber.joinWithNever
       expectedMessages = List(MyEvent("test/topic", "test/topic", "test message"))
       _ <- IO(expect(messages == expectedMessages))
-    } yield success
-  }
+    yield success
 
-  test("MqttSubscriber should send keep-alive messages") { mqttContainer =>
-    for {
+  test("MqttSubscriber should send keep-alive messages"): mqttContainer =>
+    for
       host <- IO(mqttContainer.host)
       port <- IO(mqttContainer.mappedPort(1883))
       keepAliveSubscriber = new MqttSubscriber[IO, MyEvent](
@@ -100,14 +98,11 @@ object MQTTClientSuite extends IOSuite {
       mainSubscriberFiber <- mainSubscriber.mqttStream.compile.drain.start
       keepAliveMessages <- receivedMessagesFiber.joinWithNever
       _ <- mainSubscriberFiber.cancel
-    } yield expect(keepAliveMessages.nonEmpty)
-  }
+    yield expect(keepAliveMessages.nonEmpty)
 
-  private def publishMessagesToBroker(host: String, port: Int): IO[Unit] = IO {
+  private def publishMessagesToBroker(host: String, port: Int): IO[Unit] = IO.delay:
     val client = new MqttClient(s"tcp://$host:$port", MqttClient.generateClientId())
     client.connect()
     val message = new MqttMessage("test message".getBytes("UTF-8"))
     client.publish("test/topic", message)
     client.disconnect()
-  }
-}
